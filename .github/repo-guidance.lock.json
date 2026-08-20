@@ -1,0 +1,22 @@
+{
+  "generated_by": "corneliusbrackett/repo-guidance",
+  "repository": "corneliusbrackett/tabletop-dice-roller-support",
+  "flavors": [
+    "support"
+  ],
+  "overlay": "tabletop-dice-roller-support",
+  "managed_files": [
+    ".github/copilot-instructions.md",
+    ".github/prompts/next-task.prompt.md",
+    ".github/prompts/validate-change.prompt.md",
+    ".github/pull_request_template.md",
+    "AGENTS.md"
+  ],
+  "sha256": {
+    "AGENTS.md": "fff0f335aae1d2ff794fafced8fd77bba9abf3ebb0bfda07353f52507a5b5d0d",
+    ".github/copilot-instructions.md": "23a4d4f4f90513a9a1b6f443b64acd66065135d7df9b3713e4087c3cbce1b46a",
+    ".github/prompts/next-task.prompt.md": "bbbfa189bbbfeaa2a94b2d148032f813f85c528349d7c9c0e4eb009a483aec67",
+    ".github/prompts/validate-change.prompt.md": "dc2f0a354586c3ed9546cc7f66198dedb2591244031b6ab101d629c534e2a9d4",
+    ".github/pull_request_template.md": "69cfaa4d672be0e4bd93e97d6c3866adfb864a0e66c7974fadc368b1e2fa2e49"
+  }
+}
