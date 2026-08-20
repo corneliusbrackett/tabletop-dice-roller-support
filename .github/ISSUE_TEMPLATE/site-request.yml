@@ -1,0 +1,23 @@
+name: Site compatibility request
+description: Request support for another tabletop/game site
+title: ""
+body:
+  - type: input
+    id: site
+    attributes:
+      label: Site
+      description: Public hostname or site name. Do not include private account URLs or credentials.
+    validations:
+      required: true
+  - type: textarea
+    id: use
+    attributes:
+      label: What should the extension do there?
+      description: Describe the page/context and desired dice-roller behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Compatibility notes
+      description: Browser/version or anything unusual about the site.
