@@ -44,7 +44,3 @@ This repository is public support/triage, not product source.
 - Route engineering work to the designated source repository.
 - Preserve reproduction evidence, version/context, and reporter privacy.
 - Never ask reporters to expose secrets or sensitive private data.
-
-## Support routing
-
-Product/source changes belong in the private `corneliusbrackett/TabletopDiceRoller` repo. When a public report becomes engineering work, create/link the source-repo Issue without exposing private implementation detail.
