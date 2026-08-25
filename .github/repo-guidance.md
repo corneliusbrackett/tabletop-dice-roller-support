@@ -17,6 +17,15 @@ Before changing anything, read the relevant Issue/request plus surrounding imple
 - Ask only when a material decision cannot be resolved safely from available repository evidence.
 - Never invent missing facts, validation results, environment details, or user intent.
 
+## Cross-project provenance
+
+- Whenever an agent intentionally crosses a project or repository boundary for work that influences the current task, leave a durable trace in the originating project's current Issue, PR, or other authoritative work record before ending the session.
+- Record the other project/repository, what was read/called/changed, why the boundary was crossed, and the concrete result or reference (Issue, PR, branch, commit, workflow/deployment run, release, artifact, or equivalent).
+- Read-only cross-project calls may be summarized briefly, but they still require enough provenance to reconstruct which external project informed the work.
+- If the cross-project action mutates, deploys, publishes, releases, or configures the target project, leave a reciprocal trace in the target project's relevant durable record when possible so the relationship can be reconstructed from either side.
+- For deployment or publishing flows, explicitly record which repository/project owns the production deployment and how the cross-project handoff was invoked.
+- Never rely on chat/session history as the only documentation of a cross-project interaction.
+
 ## Validation truthfulness
 
 - Run the smallest relevant validation plus broader checks required by scope.
