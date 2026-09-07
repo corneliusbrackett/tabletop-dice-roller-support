@@ -26,12 +26,54 @@ Before changing anything, read the relevant Issue/request plus surrounding imple
 - For deployment or publishing flows, explicitly record which repository/project owns the production deployment and how the cross-project handoff was invoked.
 - Never rely on chat/session history as the only documentation of a cross-project interaction.
 
+## CI execution model
+
+- Prefer the `brackett-ci` self-hosted runner pool for fast, repeatable CI that can run safely on Linux without privileged or product-specific infrastructure.
+- The standard fast-runner label set is `[self-hosted, linux, x64, general]`.
+- Put linting, typechecking, unit tests, ordinary builds, and similar fast feedback on the self-hosted runner when the required toolchain is available there.
+- Keep jobs on GitHub-hosted runners when they require heavyweight or specialized provisioning that is not part of the general runner contract, such as Android SDK/emulator work, browser/system-package installation, platform-specific builds, signing/release infrastructure, or other isolated environments.
+- A repository may intentionally use both: self-hosted CI for the fast inner loop and hosted CI for specialized validation/artifact generation.
+- Do not silently weaken validation merely to make a job fit the self-hosted runner. Preserve required checks and split workflows instead.
+- When adding a new repo with CI, evaluate self-hosted eligibility by default rather than defaulting every job to `ubuntu-latest`.
+
 ## Validation truthfulness
 
 - Run the smallest relevant validation plus broader checks required by scope.
 - Never claim a test, browser/device check, deployment, server run, account action, or external-system validation unless it actually occurred.
 - Distinguish static/local validation from real integration/environment validation.
 - State exactly what remains unverified.
+
+## Execution environment
+
+- Canonical checkout is `/home/corne/work/tabletop-dice-roller-support` on WSL Ubuntu-24.04 (ext4). Windows can open the same tree at `\\wsl.localhost\Ubuntu-24.04\home\corne\work\tabletop-dice-roller-support`.
+- Do not use `C:\Repository\tabletop-dice-roller-support` or `/mnt/c/Repository/tabletop-dice-roller-support`. Those paths are retired.
+- Prefer POSIX/`bash` command recipes in docs and agent instructions. Do not default to `powershell` fences or `cmd.exe` unless the command is truly Windows-only.
+- Before creating or updating build artifacts, dependency installs, virtual environments, generated outputs, credentials, or deploy state, verify which shell/OS/toolchain actually consumes them.
+- Do not assume similarly named shells share filesystem semantics, PATH entries, installed packages, virtual environments, credential stores, or CLI auth state.
+- Run build/setup commands in the same environment that will consume the result; use other environments only for read-only inspection unless the repository explicitly allows otherwise.
+- When giving or running commands, adapt to the active shell's syntax and quoting rules instead of reusing commands from a different shell family.
+- Do not reuse Windows `node_modules`, `.venv`, Gradle caches, or `gradlew.bat` outputs on this Linux tree; recreate them with the Linux toolchain.
+- Before relying on a credentialed CLI, check auth in that exact environment; if unavailable, use configured connectors or repo-supported alternatives before declaring the task blocked.
+
+## WSL-first environment
+
+This session runs inside WSL. The Linux filesystem is primary; Windows is secondary and reachable, not assumed.
+
+- Primary workspace: `/home/corne/work/` and `~/`. Search here first for repos, projects, and files.
+- Windows mounts live under `/mnt/c/...` (and `/mnt/d/...` if present). From Windows, the same trees are at `\\wsl$\Ubuntu-24.04\...` or `\\wsl.localhost\Ubuntu-24.04\...`.
+- Translate paths with `wslpath` in either direction. Do not hand-roll conversions.
+- The only projects that live on the Windows side are the Unity projects under `/mnt/c/Users/corne/...` (exact folders listed in the guidance repo's environment map). Everything else belongs in WSL.
+- When asked to find local repos or files, check WSL first, then the Windows mounts. An empty Windows profile is not evidence of missing repos.
+- Never default to the Windows user profile or `C:\Users\...` as the home for project work.
+
+## Session bootstrap
+
+On a new session or when starting work in a repo, do this before hunting:
+
+1. Ensure the guidance repo is current: `cd /home/corne/work/repo-guidance && git pull --ff-only`.
+2. Read this file (or the rendered `.github/repo-guidance.md` in the active repo) so the environment map and rules are loaded.
+3. Confirm the active checkout path matches the canonical WSL location above; if the agent was launched from a Windows-native shell, switch into WSL or the `\\wsl$\...` view before touching files.
+4. If the task needs a project that does not yet exist, default to creating it under `/home/corne/work/<name>` in WSL. Only place something on the Windows side when the toolchain or platform genuinely requires it (Unity is the known case) — and record that exception in the guidance repo's environment map so future sessions inherit it.
 
 ## Working style
 
