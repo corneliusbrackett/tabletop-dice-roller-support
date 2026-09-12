@@ -36,6 +36,18 @@ Before changing anything, read the relevant Issue/request plus surrounding imple
 - Do not silently weaken validation merely to make a job fit the self-hosted runner. Preserve required checks and split workflows instead.
 - When adding a new repo with CI, evaluate self-hosted eligibility by default rather than defaulting every job to `ubuntu-latest`.
 
+## CI artifact storage
+
+GitHub Actions artifact storage is shared account-level capacity. Treat it as transient CI storage, not a default distribution channel or archive.
+
+- Do not upload build products such as APKs, ZIPs, installers, screenshots, test captures, or packaged binaries on every ordinary successful push merely because the workflow produced them.
+- Prefer no artifact for normal successful CI. Upload diagnostic evidence on failure when it is genuinely useful for debugging.
+- When a human needs a downloadable build, gate artifact creation behind an explicit event such as `workflow_dispatch`, a release/tag flow, or another intentional distribution path rather than every commit.
+- Every `actions/upload-artifact` use must set an explicit `retention-days`. Use 1–3 days for transient diagnostics or ad-hoc builds unless a concrete requirement justifies longer retention.
+- Avoid duplicate uploads from matrix jobs, parallel workflows, repeated platform variants, or multiple jobs packaging the same content.
+- Before adding or expanding artifact uploads, estimate `artifact size × expected retained runs` and consider the account-wide storage impact.
+- If a file is intended for durable distribution, prefer the appropriate durable mechanism such as a GitHub Release asset rather than long-lived Actions artifacts.
+
 ## Validation truthfulness
 
 - Run the smallest relevant validation plus broader checks required by scope.
