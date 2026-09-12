@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "generated_by": "corneliusbrackett/repo-guidance",
-  "guidance_revision": "b201bd3366a3f69a6f2a2376207e815f36fdd7ef",
+  "guidance_revision": "004d22a40ceeec7ff91c766eca98e9be23aa0af4",
   "repository": "corneliusbrackett/tabletop-dice-roller-support",
   "lifecycle": "active",
   "flavors": [
@@ -11,6 +11,6 @@
     ".github/repo-guidance.md"
   ],
   "sha256": {
-    ".github/repo-guidance.md": "5a7a77df2728d106ddd5e6b6e3ab912b700f12987f04b0cc3b19bc2ab4d6ed9a"
+    ".github/repo-guidance.md": "e9a55241983b670a6ec7f915da80291c88724a2943012ed85cf2d1e107de51a0"
   }
 }
