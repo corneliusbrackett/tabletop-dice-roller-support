@@ -55,6 +55,12 @@ Before changing anything, read the relevant Issue/request plus surrounding imple
 - Do not reuse Windows `node_modules`, `.venv`, Gradle caches, or `gradlew.bat` outputs on this Linux tree; recreate them with the Linux toolchain.
 - Before relying on a credentialed CLI, check auth in that exact environment; if unavailable, use configured connectors or repo-supported alternatives before declaring the task blocked.
 
+## Gradle builds
+
+- Enable Gradle's configuration cache (`org.gradle.configuration-cache=true` in `gradle.properties`) for any Gradle-based project (Android, JVM, Kotlin, mod builds, etc.) unless a specific plugin/task in that repo is confirmed incompatible.
+- After enabling it in a repo that didn't already have it, run a real build (not just a dry run) to confirm no configuration-cache-incompatible plugin/task breaks it before considering the change done.
+- If a plugin/task is incompatible, prefer fixing or excluding that specific task over disabling the cache repo-wide; note the exclusion and why in that repo's own docs.
+
 ## WSL-first environment
 
 This session runs inside WSL. The Linux filesystem is primary; Windows is secondary and reachable, not assumed.
@@ -68,7 +74,10 @@ This session runs inside WSL. The Linux filesystem is primary; Windows is second
 
 ## Session bootstrap
 
-On a new session or when starting work in a repo, do this before hunting:
+On a new session or when starting work in a repo, run or source
+`/home/corne/work/repo-guidance/scripts/agent-bootstrap.sh`, then read
+`/home/corne/work/repo-guidance/docs/ENVIRONMENT.md` and this guidance.
+The equivalent manual steps before hunting are:
 
 1. Ensure the guidance repo is current: `cd /home/corne/work/repo-guidance && git pull --ff-only`.
 2. Read this file (or the rendered `.github/repo-guidance.md` in the active repo) so the environment map and rules are loaded.
