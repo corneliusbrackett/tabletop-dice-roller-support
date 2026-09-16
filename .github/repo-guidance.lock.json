@@ -1,16 +1,30 @@
 {
   "schema_version": 3,
   "generated_by": "corneliusbrackett/repo-guidance",
-  "guidance_revision": "b201bd3366a3f69a6f2a2376207e815f36fdd7ef",
+  "guidance_revision": "95e23a64f3c1b66f9f1e351272a1f54ecc93e443",
   "repository": "corneliusbrackett/tabletop-dice-roller-support",
   "lifecycle": "active",
   "flavors": [
     "support"
   ],
+  "selected_guidance": [
+    {
+      "id": "base-operating-guidance",
+      "source": "templates/base/agents.md",
+      "reason": "Universal operating guidance applies to every managed repository.",
+      "confidence": 1.0
+    },
+    {
+      "id": "flavor-support",
+      "source": "flavors/support/agents.md",
+      "reason": "The manifest assigns the repository the 'support' guidance flavor.",
+      "confidence": 1.0
+    }
+  ],
   "managed_files": [
     ".github/repo-guidance.md"
   ],
   "sha256": {
-    ".github/repo-guidance.md": "5a7a77df2728d106ddd5e6b6e3ab912b700f12987f04b0cc3b19bc2ab4d6ed9a"
+    ".github/repo-guidance.md": "24fc9523f7a5a4eb7ba39ada86b602d0f4a9c54b4425f21e443c38678195bb52"
   }
 }

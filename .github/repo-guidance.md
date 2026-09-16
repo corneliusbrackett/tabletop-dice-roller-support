@@ -36,6 +36,18 @@ Before changing anything, read the relevant Issue/request plus surrounding imple
 - Do not silently weaken validation merely to make a job fit the self-hosted runner. Preserve required checks and split workflows instead.
 - When adding a new repo with CI, evaluate self-hosted eligibility by default rather than defaulting every job to `ubuntu-latest`.
 
+## CI artifact storage
+
+GitHub Actions artifact storage is shared account-level capacity. Treat it as transient CI storage, not a default distribution channel or archive.
+
+- Do not upload build products such as APKs, ZIPs, installers, screenshots, test captures, or packaged binaries on every ordinary successful push merely because the workflow produced them.
+- Prefer no artifact for normal successful CI. Upload diagnostic evidence on failure when it is genuinely useful for debugging.
+- When a human needs a downloadable build, gate artifact creation behind an explicit event such as `workflow_dispatch`, a release/tag flow, or another intentional distribution path rather than every commit.
+- Every `actions/upload-artifact` use must set an explicit `retention-days`. Use 1–3 days for transient diagnostics or ad-hoc builds unless a concrete requirement justifies longer retention.
+- Avoid duplicate uploads from matrix jobs, parallel workflows, repeated platform variants, or multiple jobs packaging the same content.
+- Before adding or expanding artifact uploads, estimate `artifact size × expected retained runs` and consider the account-wide storage impact.
+- If a file is intended for durable distribution, prefer the appropriate durable mechanism such as a GitHub Release asset rather than long-lived Actions artifacts.
+
 ## Validation truthfulness
 
 - Run the smallest relevant validation plus broader checks required by scope.
@@ -83,6 +95,10 @@ The equivalent manual steps before hunting are:
 2. Read this file (or the rendered `.github/repo-guidance.md` in the active repo) so the environment map and rules are loaded.
 3. Confirm the active checkout path matches the canonical WSL location above; if the agent was launched from a Windows-native shell, switch into WSL or the `\\wsl$\...` view before touching files.
 4. If the task needs a project that does not yet exist, default to creating it under `/home/corne/work/<name>` in WSL. Only place something on the Windows side when the toolchain or platform genuinely requires it (Unity is the known case) — and record that exception in the guidance repo's environment map so future sessions inherit it.
+
+### GitHub continuity
+
+Session bootstrap refreshes and prunes every WSL checkout before project work. It removes local branches whose configured GitHub upstream was deleted, except for the active branch or a branch checked out in another worktree. A global `post-commit` hook pushes successful feature-branch commits to `origin`; a commit made directly on the default branch is moved onto a `codex/pr-...` branch and published through an automatically created GitHub PR. Failed pushes are reported and leave commits local for the next session. Uncommitted edits are not auto-committed, so commit work before handing it to another session.
 
 ## Working style
 
