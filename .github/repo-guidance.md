@@ -48,6 +48,10 @@ GitHub Actions artifact storage is shared account-level capacity. Treat it as tr
 - Before adding or expanding artifact uploads, estimate `artifact size × expected retained runs` and consider the account-wide storage impact.
 - If a file is intended for durable distribution, prefer the appropriate durable mechanism such as a GitHub Release asset rather than long-lived Actions artifacts.
 
+## Local-only generated evidence
+
+Screenshots, Playwright output, emulator captures, preview JSON, and similar generated evidence must not be committed or uploaded by default. Write them to a local scratch directory outside the repo checkout (for example `/home/corne/work/output/`; directories marked with `LOCAL-SCRATCH.md` are local-only), not into the working tree. Attach a single curated file to an Issue or PR only when it is needed as evidence. See `docs/LOCAL_SCRATCH.md` in the guidance repo.
+
 ## Validation truthfulness
 
 - Run the smallest relevant validation plus broader checks required by scope.
@@ -100,6 +104,40 @@ The equivalent manual steps before hunting are:
 
 Session bootstrap refreshes and prunes every WSL checkout before project work. It removes local branches whose configured GitHub upstream was deleted, except for the active branch or a branch checked out in another worktree. A global `post-commit` hook pushes successful feature-branch commits to `origin`; a commit made directly on the default branch is moved onto a `codex/pr-...` branch and published through an automatically created GitHub PR. Failed pushes are reported and leave commits local for the next session. Uncommitted edits are not auto-committed, so commit work before handing it to another session.
 
+## Codex capability review
+
+At session start, before repeating a manual workflow several times, and at a
+natural milestone, briefly check whether a Codex capability would make the
+current repository safer or more repeatable. This is a fit review, not a
+requirement to add tooling to every repository. Use
+`docs/CODEX-CAPABILITIES.md` in the guidance checkout for the decision table
+and adoption rules.
+
+- Use a skill for a repeatable workflow with stable steps, such as GitHub
+  synchronization, Android APK acceptance, release checks, or UI quality
+  review.
+- Use an agent profile for a recurring role with distinct instructions,
+  permissions, or model needs, such as a read-only UI reviewer.
+- Use a subagent for bounded, independent work whose noisy exploration or
+  test output should stay out of the main session. Prefer read-only or
+  write-isolated work first; do not have concurrent agents edit the same
+  checkout without an explicit coordination plan.
+- Use a worktree when independent branches need simultaneous edits. One
+  worktree per branch; do not treat a worktree as a substitute for runtime
+  isolation when the host or WSL environment is already unstable.
+- Use MCP only when the workflow needs an external system or capability that
+  local files and shell commands do not provide.
+- Use hooks for bounded lifecycle checks, reminders, validation, or logging.
+  Do not add an automatic commit/push hook or any other externally mutating
+  hook without explicit repository authorization and a recovery plan. Hooks
+  can run automatically and matching hooks may run concurrently.
+
+When a capability appears useful, explain the candidate, trigger, scope,
+security/maintenance cost, and validation plan before creating or enabling it.
+If the idea is reusable across repositories, propose it for the guidance repo;
+if it is product-specific, keep it in the consumer repository. Leave a durable
+record in the repository's Issue, PR, or other designated authority when a
+capability is adopted or intentionally rejected.
 ## Working style
 
 This is a solo/hobby-oriented repo ecosystem. Avoid process for process's sake.
