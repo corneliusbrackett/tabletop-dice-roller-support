@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a problem with Tabletop Dice Roller
+description: Report a problem with Rollwright
 title: ""
 body:
   - type: dropdown
