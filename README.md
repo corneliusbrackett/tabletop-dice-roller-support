@@ -1,6 +1,8 @@
-# Tabletop Dice Roller — Support
+# Rollwright — Support
 
-This repo hosts support requests and bug reports for the [Tabletop Dice Roller](https://corneliusbrackett.com/tabletop-dice-roller/) browser extension (Chrome / Edge). There's no source code here — it's just an issue tracker.
+Formerly Tabletop Dice Roller.
+
+This repo hosts support requests and bug reports for the [Rollwright](https://corneliusbrackett.com/tabletop-dice-roller/) browser extension (Chrome / Edge). There's no source code here — it's just an issue tracker.
 
 Found a bug, or a site you'd like added to the allowed-sites list? [Open an issue](https://github.com/corneliusbrackett/tabletop-dice-roller-support/issues/new).
 
@@ -22,7 +24,7 @@ There is no build, pack, test, or launcher in this repository. No `cmd.exe` / Po
 | `README.md` | Support instructions |
 | `AGENTS.md` | Agent operating notes |
 | `.github/ISSUE_TEMPLATE/` | Bug and site-request forms |
-| `tabletop-dice-roller-support.code-workspace` | VS Code workspace (relative `.` folder) |
+| `rollwright-support.code-workspace` | VS Code workspace (relative `.` folder) |
 
 From WSL:
 
@@ -33,3 +35,7 @@ ls
 ```
 
 That is the whole local workflow: clone/open the tree and use GitHub Issues. There is no `npm`/`make` target to run.
+
+## Repository rename
+
+The intended GitHub name is `rollwright-support`. The current name and issue links remain in use until an owner renames the repository in Settings. Existing reports should stay in this repository. The product rebrand is tracked in `corneliusbrackett/TabletopDiceRoller` on branch `rename/rollwright`.
