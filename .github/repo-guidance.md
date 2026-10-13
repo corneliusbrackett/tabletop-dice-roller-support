@@ -26,6 +26,49 @@ Before changing anything, read the relevant Issue/request plus surrounding imple
 - For deployment or publishing flows, explicitly record which repository/project owns the production deployment and how the cross-project handoff was invoked.
 - Never rely on chat/session history as the only documentation of a cross-project interaction.
 
+## Checkpoint publishing and work visibility
+
+For repositories that permit remote work updates, publish progress at meaningful
+verified milestones on the task's authorized feature branch. Do not create
+fixed-time commits or commit incomplete, unsafe, or private material just to
+make activity visible. Follow repository branch, privacy, review, and no-push
+rules; if they prohibit publication, keep the work local and report that status.
+
+When a task has a GitHub Issue or draft PR, post a concise checkpoint there at a
+meaningful milestone and when pausing, handing off, being interrupted, or
+ending the work session. Include the objective, last verified commit (or say
+there is none), next step, blockers, known failures, and verification status.
+Do not include credentials, secrets, raw logs, or private data. If there is no
+safe code change to commit, publish status only when the repository permits it.
+
+Report these states separately: **committed locally**, **pushed** (only after
+the remote confirms the commit), **verified** (name the checks and result), and
+**merged** (only after the hosting service confirms it). A local commit is not
+remote visibility; a successful push is not verification or merge. If a push or
+status update fails, say so plainly, identify what remains local, and do not
+force-push or retry repeatedly. Never merge, create repositories, or widen
+permissions as part of a checkpoint. Human review and branch protection remain
+in force.
+
+Choose cadence by evidence: publish after a coherent, reviewable milestone or
+when status materially changes, not after an arbitrary amount of time. Daedalus
+operational heartbeats show that a worker is alive; they are not code or task
+checkpoints and do not replace updates to the task's Issue or PR. This policy
+applies across agent providers; repository-specific rules may further restrict
+it.
+
+Examples:
+
+- **Verified milestone:** commit the tested change on the authorized feature
+  branch, confirm the push, then report the commit, checks, and next step on the
+  Issue or draft PR. Do not call it merged.
+- **Blocked or paused:** leave unsafe or unfinished code uncommitted; post the
+  objective, last verified commit, blocker, known failure, and next step if
+  status updates are allowed. Label any local-only state clearly.
+- **No-push or sensitive repository:** do not transmit code or details. Record
+  the permitted local handoff status, redact private information, and state
+  that no remote checkpoint was published.
+
 ## CI execution model
 
 - Prefer the `brackett-ci` self-hosted runner pool for fast, repeatable CI that can run safely on Linux without privileged or product-specific infrastructure.
@@ -51,6 +94,15 @@ GitHub Actions artifact storage is shared account-level capacity. Treat it as tr
 ## Local-only generated evidence
 
 Screenshots, Playwright output, emulator captures, preview JSON, and similar generated evidence must not be committed or uploaded by default. Write them to a local scratch directory outside the repo checkout (for example `/home/corne/work/output/`; directories marked with `LOCAL-SCRATCH.md` are local-only), not into the working tree. Attach a single curated file to an Issue or PR only when it is needed as evidence. See `docs/LOCAL_SCRATCH.md` in the guidance repo.
+
+Clean up after each task. Put generated files in a task-specific subdirectory
+or use filenames prefixed with the repo and task. Before finishing, stop
+servers and processes started for the task, remove temporary files, browser
+profiles, test data, packages, and build outputs that are no longer needed,
+and check the repo for untracked generated files. Keep only files needed to
+resume active work or evidence deliberately retained in an Issue/PR. In a
+shared scratch directory, remove only files created for this task; never
+delete another task's files or the directory's `LOCAL-SCRATCH.md` marker.
 
 ## Validation truthfulness
 
@@ -93,6 +145,35 @@ This session runs inside WSL. The Linux filesystem is primary; Windows is second
 On a new session or when starting work in a repo, run or source
 `/home/corne/work/repo-guidance/scripts/agent-bootstrap.sh`, then read
 `/home/corne/work/repo-guidance/docs/ENVIRONMENT.md` and this guidance.
+
+The supported WSL bootstrap runs `scripts/guidance_preflight.py` for the active
+checkout before work begins. It reports a machine-readable status, effective
+guidance revision, profile, and fingerprint. `CURRENT` means the managed files
+match a render from the approved central default branch and the consumer's
+default branch. `APPROVED_STALE` means an approved update is available;
+`UPDATE_PENDING` means local guidance differs from the consumer's approved
+default branch; `DRIFTED` means managed files or their lock/pointer disagree;
+`UNKNOWN_OFFLINE` means the approved state could not be verified. `PAUSED`,
+`EXEMPT`, and `UNMANAGED` identify repositories outside active sync. Do not
+describe an unknown or pending revision as current. The check is read-only with
+respect to worktree files and never installs a pending update.
+
+At the start of a task and before admitting a Daedalus packet, run the same
+preflight again and record its status, revision, profile, and fingerprint in
+the task record. Keep that snapshot fixed through the packet. Daedalus packets
+that use a signed guidance bundle must also set its verified
+`guidanceManifestPath` and `guidanceManifestDigest`; Daedalus checks the pin at
+preflight, admission, and immediately before execution. A changed pin requires
+replanning at a safe task boundary and invalidates downstream approval. If the
+preflight is stale, pending, drifted, or unknown, follow the task's risk and
+capability policy before proceeding; do not silently refresh, overwrite, or
+approve proposed guidance.
+
+WSL launches that run `agent-bootstrap.sh` receive this check automatically.
+Other launcher integrations and coverage gaps are documented in
+`docs/GUIDANCE-PREFLIGHT.md`; if a provider does not run a supported hook or
+wrapper, invoke the Python preflight command explicitly before using its tools.
+
 The equivalent manual steps before hunting are:
 
 1. Ensure the guidance repo is current: `cd /home/corne/work/repo-guidance && git pull --ff-only`.
