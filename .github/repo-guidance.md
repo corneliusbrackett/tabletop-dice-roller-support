@@ -91,6 +91,17 @@ GitHub Actions artifact storage is shared account-level capacity. Treat it as tr
 - Before adding or expanding artifact uploads, estimate `artifact size × expected retained runs` and consider the account-wide storage impact.
 - If a file is intended for durable distribution, prefer the appropriate durable mechanism such as a GitHub Release asset rather than long-lived Actions artifacts.
 
+## Visual evidence checkpoints
+
+- Opt in per repository with a small manifest validated against `schemas/visual-evidence-manifest.schema.json`; define only canonical UI states and representative viewports. See `docs/VISUAL_EVIDENCE.md`.
+- Evaluate evidence only at verified UI checkpoints: a feature branch/draft PR, review-ready PR, and after merge or issue completion. Hooks may evaluate eligibility, but must not capture or upload on every commit or push.
+- Capture only material visible changes, visual regressions, review/acceptance needs, or an explicit request. Skip backend, documentation, dependency, and visually unchanged checkpoints. Missing screenshot tooling is reported as unavailable and never blocks ordinary development.
+- Publish at most 3–6 relevant images per checkpoint by default. Avoid per-test captures and viewport/state permutations. One issue/PR note links the latest relevant set and labels its WIP or final status and verified commit.
+- Record repository, issue/PR, full commit SHA, named state, viewport, capture time, automated/physical origin, retention class, expiry, storage reference, and hold state. Keep this metadata after image bytes expire. An expired set is labeled unavailable; it is never described as current.
+- Use curated, compressed evidence in an approved store. Actions artifacts are transient (1–3 days), must be explicitly triggered for review evidence, and must not be uploaded for every successful run. Deduplicate by issue/PR, commit, checkpoint, and state before uploading.
+- Sanitize secrets, personal/customer data, tokens, private windows, and unrelated desktop content. Use isolated app viewports. Screenshots illustrate UI; they do not prove physical-device acceptance or correctness.
+- Failed capture, upload, or offline lookup is reported as unavailable. Do not claim visual acceptance. Keep provider-specific capture and upload logic in the consumer repository; shared hooks only evaluate the contract.
+
 ## Local-only generated evidence
 
 Screenshots, Playwright output, emulator captures, preview JSON, and similar generated evidence must not be committed or uploaded by default. Write them to a local scratch directory outside the repo checkout (for example `/home/corne/work/output/`; directories marked with `LOCAL-SCRATCH.md` are local-only), not into the working tree. Attach a single curated file to an Issue or PR only when it is needed as evidence. See `docs/LOCAL_SCRATCH.md` in the guidance repo.
@@ -104,12 +115,28 @@ resume active work or evidence deliberately retained in an Issue/PR. In a
 shared scratch directory, remove only files created for this task; never
 delete another task's files or the directory's `LOCAL-SCRATCH.md` marker.
 
+### Generated-output retention
+
+- Use isolated, task-scoped output directories. Set `AGENT_OUTPUT_ROOT` to choose the local scratch root; do not direct generated output into a repository or an unreviewed shared folder.
+- Categorize each run as `temporary`, `diagnostic`, `verification`, `release`, or `user-owned`. The default retention is 7 days for temporary output, 30 days for diagnostics, and 30 days after verification for verification evidence. Repository policy may set a different period.
+- Configure repository-specific defaults with `AGENT_OUTPUT_RETENTION_TEMPORARY_DAYS`, `AGENT_OUTPUT_RETENTION_DIAGNOSTIC_DAYS`, or `AGENT_OUTPUT_RETENTION_VERIFICATION_DAYS`; the helper snapshots the effective period into each run's metadata.
+- Keep verification evidence until review and verification finish. Verification runs must record an Issue/PR/integration reference or explicitly declare that there is none. Keep evidence linked to an open reference until it is resolved. Release and audit evidence follows repository governance and is never expired by the default policy. Unknown and user-owned files are protected.
+- `python /home/corne/work/repo-guidance/scripts/output_retention.py run` creates a marked per-run directory, records metadata, and holds an active-run lock while the command runs. Tools should write to `$AGENT_OUTPUT_DIR` when using this wrapper.
+- `python /home/corne/work/repo-guidance/scripts/output_retention.py cleanup` is a preview. Review each proposed path and its category, age, references, and inventory; use `--exclude <run-id>` to preserve selected runs. Delete only with explicit `--apply`; cleanup logs each exact removal to the output root's `cleanup.log`.
+- Cleanup only handles direct run directories created by the wrapper with valid metadata and a complete file inventory. It skips active runs, symlinks, path traversal, unlisted files, incomplete runs, and evidence with unresolved references. Do not apply cleanup automatically, during offline recovery, or to pre-existing output folders that lack this metadata.
+- After verification, use `python /home/corne/work/repo-guidance/scripts/output_retention.py review --verified --run-dir <path>`; resolve linked records only after confirming they are closed. Treat the metadata update as a human review action.
+- Keep the root `LOCAL-SCRATCH.md` marker. A cleanup preview or removal must never include the marker or unrelated files.
+
 ## Validation truthfulness
 
 - Run the smallest relevant validation plus broader checks required by scope.
 - Never claim a test, browser/device check, deployment, server run, account action, or external-system validation unless it actually occurred.
 - Distinguish static/local validation from real integration/environment validation.
 - State exactly what remains unverified.
+
+## Lanternlight UI work
+
+For eligible UI work, Lanternlight is the default shared design standard unless an approved project record says the work is selective or exempt. Retrieve and read the canonical, versioned contract at <https://github.com/corneliusbrackett/repo-guidance/blob/main/docs/LANTERNLIGHT_DESIGN_LANGUAGE.md> before making Lanternlight-specific claims or changes. Follow its requirement IDs and the product's approved adoption record or repo-local guidance. If the source or adoption decision is unavailable or conflicting, report the uncertainty and ask the owner; do not invent palette defaults or assume an undeclared project is exempt. This lookup is conditional on UI work; unrelated and non-UI tasks do not need to fetch it.
 
 ## Execution environment
 
